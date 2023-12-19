@@ -1,0 +1,45 @@
+---
+- name: Create VR and Zones
+  hosts: "firewall"
+  connection: local
+  tags: create_vr_zones
+
+  vars:
+    device:
+      ip_address: "{{ inventory_hostname }}"
+      username: "{{ ansible_ssh_user }}"
+      password: "{{ ansible_ssh_pass }}"
+
+  collections:
+    - paloaltonetworks.panos
+
+  tasks:
+    - name: Create new Virtual Router
+      paloaltonetworks.panos.panos_virtual_router:
+        provider: "{{ device }}"
+        name: "new-vrouter"
+      tags: create_virtual_router
+
+    - name: Create zone for Internet
+      paloaltonetworks.panos.panos_zone:
+        provider: "{{ device }}"
+        zone: "internet-test"
+        mode: "layer3"
+        enable_userid: false
+      tags: create_zone
+
+    - name: Create zone for DMZ
+      paloaltonetworks.panos.panos_zone:
+        provider: "{{ device }}"
+        zone: "dmz-test"
+        mode: "layer3"
+        enable_userid: false
+      tags: create_zone_DMZ
+
+    - name: Create zone for Users
+      paloaltonetworks.panos.panos_zone:
+        provider: "{{ device }}"
+        zone: "users-test"
+        mode: "layer3"
+        enable_userid: true
+      tags: create_zone_user

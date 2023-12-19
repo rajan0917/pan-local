@@ -1,0 +1,29 @@
+---
+- name: Create address objects
+  hosts: "firewall"
+  connection: local
+  tags: create_address_objects
+
+  vars:
+    device:
+      ip_address: "{{ inventory_hostname }}"
+      username: "{{ ansible_ssh_user }}"
+      password: "{{ ansible_ssh_pass }}"
+
+  collections:
+    - paloaltonetworks.panos
+
+  tasks:
+    - name: Create source address object
+      paloaltonetworks.panos.panos_address_object:
+        provider: "{{ device }}"
+        name: "source-server"
+        value: "192.168.120.8/32"
+        description: "Address object 1 from Ansible"
+
+    - name: Create destination address object
+      paloaltonetworks.panos.panos_address_object:
+        provider: "{{ device }}"
+        name: "destination-server"
+        value: "192.168.80.5/32"
+        description: "Address object 2 from Ansible"

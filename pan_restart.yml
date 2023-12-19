@@ -1,0 +1,28 @@
+# This playbook will connect to every device listed in the hosts file with the following command
+#
+# ansible-playbook palo_check.yml -i host
+#
+# It will Restart the Devices 
+#
+# Doc for this module https://docs.ansible.com/ansible/latest/modules/panos_check_module.html
+# changed_when should always be set to False for operational command
+
+- name: PAN equipment Restart
+  hosts: "firewall"
+  connection:  local
+  gather_facts:  True
+  tags: pan_restart
+
+  tasks:
+  - name: Set Variables
+    changed_when: False
+    include_vars: vars.yml
+    
+  - name: Restart The PAN equipement
+    changed_when: False  
+    panos_restart:
+      ip_address: "{{ inventory_hostname }}"
+      username: "{{ ansible_ssh_user }}"
+      password: "{{ ansible_ssh_pass }}"
+
+
