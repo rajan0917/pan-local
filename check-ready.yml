@@ -1,0 +1,29 @@
+---
+- name: Check the firewall is ready
+  hosts: "firewall"
+  connection: local
+  gather_facts: false
+  tags: firewall_status
+
+  vars:
+    device:
+      ip_address: "{{ inventory_hostname }}"
+      username: "{{ ansible_ssh_user }}"
+      password: "{{ ansible_ssh_pass }}"
+
+  collections:
+    - paloaltonetworks.panos
+
+  tasks:
+    - name: Check if PAN-OS appliance is ready and wait until it is
+      paloaltonetworks.panos.panos_check:
+        provider: "{{ device }}"
+      changed_when: false
+      register: result
+      until: result is not failed and result.msg == 'Device is ready.'
+      retries: 100
+      delay: 15
+
+    - name: Display output
+      ansible.builtin.debug:
+        msg: "{{ result.msg }}"
